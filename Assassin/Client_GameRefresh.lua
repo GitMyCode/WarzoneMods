@@ -29,6 +29,14 @@ end
 ---Client_GameRefresh hook
 ---@param game GameClientHook
 function Client_GameRefresh(game)
+	-- Spectators (and any non-playing users) cannot send game custom messages.
+	-- This hook previously sent messages to fetch/persist target state, which causes
+	-- a pcall failure when the game is opened in spectator mode.
+	local us = game.Us
+	if us == nil or game.Game == nil or game.Game.PlayingPlayers == nil or game.Game.PlayingPlayers[us.ID] == nil then
+		return
+	end
+
 	if popupShownThisSession then
 		return
 	end
