@@ -1,4 +1,3 @@
-require("Annotations")
 require("Util/AssassinUtil")
 
 ---Server_GameCustomMessage

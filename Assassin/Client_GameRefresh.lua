@@ -1,5 +1,3 @@
-require("Annotations")
-
 local popupShownThisSession = false
 local requestedTargetThisSession = false
 

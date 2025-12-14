@@ -1,10 +1,10 @@
-require("Annotations")
 require("Util/AssassinUtil")
 
 ---Server_StartGame
 ---@param game GameServerHook
 ---@param standing GameStanding
 function Server_StartGame(game, standing)
+	print("[Assassin] Server_StartGame called")
 	local publicData = Mod.PublicGameData
 	if publicData == nil then
 		publicData = {}

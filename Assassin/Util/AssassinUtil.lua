@@ -1,5 +1,3 @@
-require("Annotations")
-
 ---Assigns targets to all players in a circular fashion
 ---@param game GameServerHook
 ---@return table<PlayerID, PlayerID> # Returns mapping of player -> target

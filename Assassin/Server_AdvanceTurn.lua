@@ -1,4 +1,3 @@
-require("Annotations")
 require("Util/AssassinUtil")
 
 -- Orders that can potentially eliminate players
@@ -93,6 +92,17 @@ local function EndGameIfWinnerLatched(game, addNewOrder)
 
 	print("[Assassin] Game ending order added")
 	return true
+end
+
+-- Safe field read (won't explode if field doesn't exist on this proxy type)
+local function _tryGet(obj, fieldName)
+	local ok, val = pcall(function()
+		return obj[fieldName]
+	end)
+	if ok then
+		return val
+	end
+	return nil
 end
 
 ---Server_AdvanceTurn_Start hook
