@@ -48,6 +48,102 @@ function IsPlayerEliminated(game, playerID)
 	return not PlayerOwnsAnyTerritory(game, playerID)
 end
 
+---@param game GameServerHook
+---@return table<PlayerID, integer>
+function BuildTerritoryCountByOwner(game)
+	local counts = {}
+	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
+		local owner = terr.OwnerPlayerID
+		if owner ~= WL.PlayerID.Neutral then
+			counts[owner] = (counts[owner] or 0) + 1
+		end
+	end
+	return counts
+end
+
+---@param playerID PlayerID
+---@param counts table<PlayerID, integer>
+---@return boolean
+function IsEliminatedByCounts(playerID, counts)
+	return playerID ~= nil and (counts[playerID] or 0) == 0
+end
+
+-- "Skip-safe / default-unsafe" list: only orders proven not to change ownership are safe.
+-- Unknown/new order types are treated as potentially ownership-changing so we won't miss eliminations.
+local SAFE_ORDERS = {
+	GameOrderDeploy = true,
+	GameOrderPurchase = true,
+
+	-- Cards that normally don't change territory ownership
+	GameOrderPlayCardSpy = true,
+	GameOrderPlayCardReconnaissance = true,
+	GameOrderPlayCardSurveillance = true,
+	GameOrderPlayCardDiplomacy = true,
+	GameOrderPlayCardSanctions = true,
+	GameOrderPlayCardReinforcement = true,
+	GameOrderPlayCardAirlift = true,
+	GameOrderPlayCardBomb = true,
+	GameOrderPlayCardFogged = true,
+
+	-- Bookkeeping-ish orders
+	GameOrderReceiveCard = true,
+	GameOrderDiscard = true,
+	ActiveCardWoreOff = true,
+}
+
+---@param order GameOrder
+---@return boolean
+function GameOrderEventChangesOwner(order)
+	-- Different proxy versions can expose either TerritoryModifications or TerritoryModificationsOpt
+	local mods = order.TerritoryModifications or order.TerritoryModificationsOpt
+	if mods == nil then
+		return false
+	end
+	for _, mod in pairs(mods) do
+		if mod.SetOwnerOpt ~= nil then
+			return true
+		end
+	end
+	return false
+end
+
+---@param order GameOrder
+---@param orderResult GameOrderResult
+---@return boolean
+function CouldAffectElimination(order, orderResult)
+	if order == nil or order.proxyType == nil then
+		return true
+	end
+
+	if order.proxyType == "GameOrderAttackTransfer" then
+		-- Only successful attacks can change ownership
+		return orderResult ~= nil and orderResult.IsAttack == true and orderResult.IsSuccessful == true
+	end
+
+	if order.proxyType == "GameOrderPlayCardGift" then
+		return true
+	end
+	if order.proxyType == "GameOrderPlayCardAbandon" then
+		return true
+	end
+	if order.proxyType == "GameOrderPlayCardBlockade" then
+		return true
+	end
+
+	-- The biggest "don't miss it" category: ownership changes emitted via events
+	if order.proxyType == "GameOrderEvent" then
+		return GameOrderEventChangesOwner(order)
+	end
+
+	-- Custom orders can trigger server-side ownership changes
+	if order.proxyType == "GameOrderCustom" then
+		return true
+	end
+
+	-- Skip safe: only skip if explicitly safe
+	return not SAFE_ORDERS[order.proxyType]
+end
+
 ---Saves the target assignments to Mod.PlayerGameData
 ---@param targets table<PlayerID, PlayerID>
 function SaveTargets(targets)

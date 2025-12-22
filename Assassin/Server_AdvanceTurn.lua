@@ -1,14 +1,5 @@
 require("Util/AssassinUtil")
 
--- Orders that can potentially eliminate players
-local ELIMINATION_ORDERS = {
-	GameOrderAttackTransfer = true,
-	GameOrderPlayCardAbandon = true,
-	GameOrderPlayCardBlockade = true,
-	GameOrderEvent = true,
-	GameOrderPlayCardGift = true,
-}
-
 ---Latch winner when a target is eliminated (territory-based)
 ---@param game GameServerHook
 ---@return PlayerID | nil
@@ -23,9 +14,10 @@ local function LatchAssassinWinnerIfAny(game)
 		return nil
 	end
 
+	local territoryCounts = BuildTerritoryCountByOwner(game)
 	for assassinID, playerData in pairs(playerDataTable) do
 		local targetID = playerData and playerData.Target
-		if targetID ~= nil and IsPlayerEliminated(game, targetID) then
+		if targetID ~= nil and IsEliminatedByCounts(targetID, territoryCounts) then
 			publicData.AssassinWinnerID = assassinID
 			publicData.AssassinWinnerTargetID = targetID
 			Mod.PublicGameData = publicData
@@ -122,8 +114,8 @@ end
 ---@param skipThisOrder fun(modOrderControl: EnumModOrderControl) # Allows you to skip the current order
 ---@param addNewOrder fun(order: GameOrder, skipIfOriginalSkipped?: boolean) # Adds a game order, will be processed before any of the rest of the orders
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
-	-- Only latch after orders that can change territory ownership
-	if ELIMINATION_ORDERS[order.proxyType] then
+	-- Latch as soon as possible, but avoid work for orders proven "safe".
+	if CouldAffectElimination(order, orderResult) then
 		LatchAssassinWinnerIfAny(game)
 	end
 end
