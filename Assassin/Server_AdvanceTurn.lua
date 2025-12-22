@@ -114,17 +114,32 @@ end
 ---@param skipThisOrder fun(modOrderControl: EnumModOrderControl) # Allows you to skip the current order
 ---@param addNewOrder fun(order: GameOrder, skipIfOriginalSkipped?: boolean) # Adds a game order, will be processed before any of the rest of the orders
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
-	-- Latch as soon as possible, but avoid work for orders proven "safe".
-	if CouldAffectElimination(order, orderResult) then
-		LatchAssassinWinnerIfAny(game)
+	-- State-based: every order, detect anyone who isn't Playing anymore
+	local eliminatedTargets = IsPlayerEliminated(game)
+	local eliminatedTargetID = eliminatedTargets and eliminatedTargets[1] or nil
+	if eliminatedTargetID ~= nil then
+		LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
 	end
+
+	-- Territory-count method (previous)
+	-- Latch as soon as possible, but avoid work for orders proven "safe".
+	-- if CouldAffectElimination(order, orderResult) then
+	-- 	LatchAssassinWinnerIfAny(game)
+	-- end
 end
 
 ---Server_AdvanceTurn_End hook
 ---@param game GameServerHook
 ---@param addNewOrder fun(order: GameOrder) # Adds a game order, will be processed before any of the rest of the orders
 function Server_AdvanceTurn_End(game, addNewOrder)
-	-- Final latch (covers surrender/boot/etc) and end game safely (do NOT link to an order)
-	LatchAssassinWinnerIfAny(game)
+	-- State-based: final check
+	local eliminatedTargets = IsPlayerEliminated(game)
+	local eliminatedTargetID = eliminatedTargets and eliminatedTargets[1] or nil
+	if eliminatedTargetID ~= nil then
+		LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
+	end
+
+	-- Territory-count method (previous)
+	-- LatchAssassinWinnerIfAny(game)
 	EndGameIfWinnerLatched(game, addNewOrder)
 end

@@ -15,7 +15,7 @@ local function ShowTargetPopupAndPersist(game, targetID)
 
 	local targetName = targetPlayer.DisplayName(nil, false)
 	UI.Alert(
-		"🎯 ASSASSIN MODE\n\nYour target is: "
+		"🎯 ASSASSIN MODE 2\n\nYour target is: "
 			.. targetName
 			.. "\n\nEliminate them to win the game!\n\n(You can check your target anytime from the Mod menu)"
 	)

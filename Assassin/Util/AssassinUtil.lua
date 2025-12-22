@@ -44,8 +44,88 @@ function PlayerOwnsAnyTerritory(game, playerID)
 	return false
 end
 
-function IsPlayerEliminated(game, playerID)
+---Territory-based elimination detector (previous method).
+---@param game GameServerHook
+---@param playerID PlayerID
+---@return boolean
+function IsPlayerEliminatedByTerritories(game, playerID)
 	return not PlayerOwnsAnyTerritory(game, playerID)
+end
+
+---State-based elimination detector.
+---Returns all PlayerIDs whose State is not "Playing".
+---This is intentionally narrow (no fallbacks); it only uses game.Game.Players[pid].State.
+---@param game GameServerHook
+---@return PlayerID[]
+function IsPlayersEliminatedByState(game)
+	---@type PlayerID[]
+	local eliminated = {}
+
+	for playerID, player in pairs(game.Game.Players) do
+		---@type PlayerID
+		local pid = playerID
+		if player ~= nil and player.State ~= "Playing" then
+			table.insert(eliminated, pid)
+		end
+	end
+
+	return eliminated
+end
+
+---Returns the next eliminated (non-playing) player using the selected method.
+---For now, this delegates to IsPlayersEliminatedByState(game).
+---@param game GameServerHook
+---@return PlayerID[]
+function IsPlayerEliminated(game)
+	return IsPlayersEliminatedByState(game)
+end
+
+---Find the assassin whose target matches the given player.
+---@param targetPlayerID PlayerID
+---@return PlayerID | nil
+function FindAssassinForTarget(targetPlayerID)
+	if targetPlayerID == nil then
+		return nil
+	end
+	local playerDataTable = Mod.PlayerGameData
+	if playerDataTable == nil then
+		return nil
+	end
+	for assassinID, playerData in pairs(playerDataTable) do
+		local targetID = playerData and playerData.Target
+		if targetID ~= nil and targetID == targetPlayerID then
+			return assassinID
+		end
+	end
+	return nil
+end
+
+---Latch the assassin winner when the eliminated target is known.
+---@param game GameServerHook
+---@param eliminatedTargetID PlayerID
+---@return PlayerID | nil
+function LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
+	local publicData = Mod.PublicGameData or {}
+	if publicData.AssassinWinnerID ~= nil then
+		return publicData.AssassinWinnerID
+	end
+
+	local assassinID = FindAssassinForTarget(eliminatedTargetID)
+	if assassinID == nil then
+		return nil
+	end
+
+	publicData.AssassinWinnerID = assassinID
+	publicData.AssassinWinnerTargetID = eliminatedTargetID
+	Mod.PublicGameData = publicData
+
+	local winner = game.Game.Players[assassinID]
+	local target = game.Game.Players[eliminatedTargetID]
+	local winnerName = winner and winner.DisplayName(nil, false) or tostring(assassinID)
+	local targetName = target and target.DisplayName(nil, false) or tostring(eliminatedTargetID)
+	print("[Assassin] Winner latched (state): " .. winnerName .. " eliminated target: " .. targetName)
+
+	return assassinID
 end
 
 ---@param game GameServerHook
