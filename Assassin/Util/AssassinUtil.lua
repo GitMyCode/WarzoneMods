@@ -54,30 +54,23 @@ end
 
 ---State-based elimination detector.
 ---Returns all PlayerIDs whose State is not "Playing".
----This is intentionally narrow (no fallbacks); it only uses game.Game.Players[pid].State.
 ---@param game GameServerHook
 ---@return PlayerID[]
 function IsPlayersEliminatedByState(game)
+	local PLAYING = 2
+
 	---@type PlayerID[]
 	local eliminated = {}
-
 	for playerID, player in pairs(game.Game.Players) do
 		---@type PlayerID
 		local pid = playerID
-		if player ~= nil and player.State ~= "Playing" then
+		local state = player and player.State
+		print("[Assassin] Checking player " .. tostring(pid) .. " state: " .. tostring(state))
+		if state ~= nil and state ~= PLAYING then
 			table.insert(eliminated, pid)
 		end
 	end
-
 	return eliminated
-end
-
----Returns the next eliminated (non-playing) player using the selected method.
----For now, this delegates to IsPlayersEliminatedByState(game).
----@param game GameServerHook
----@return PlayerID[]
-function IsPlayerEliminated(game)
-	return IsPlayersEliminatedByState(game)
 end
 
 ---Find the assassin whose target matches the given player.
