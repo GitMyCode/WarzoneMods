@@ -1,0 +1,14 @@
+Bounty Mode
+
+Eliminate players to earn rewards.
+
+Each time you eliminate another player, you get a configurable fixed reward:
+- Normal games: fixed troops reward
+- Commerce games: fixed gold reward
+
+Kills are attributed to the decisive order:
+- Successful attack: attacker gets the reward
+- Failed attack where the attacker is eliminated: defender gets the reward
+- Blockade/Abandon trap kills into neutral: trap owner gets the reward
+
+Trap attribution on a territory is removed as soon as that territory is conquered by any player.
