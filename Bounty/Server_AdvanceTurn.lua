@@ -392,11 +392,22 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 
 	-- Track last attacker per victim (for _End fallback)
 	if order ~= nil and order.proxyType == "GameOrderAttackTransfer" then
-		if orderResult ~= nil and orderResult.IsAttack == true and orderResult.IsSuccessful == true then
-			local victimOfOrder = beforeOwners[order.To]
-			if victimOfOrder ~= nil and victimOfOrder ~= WL.PlayerID.Neutral then
-				lastAttackerByVictim[tostring(victimOfOrder)] = order.PlayerID
-				Log("  Tracked last attacker of " .. tostring(victimOfOrder) .. " = " .. tostring(order.PlayerID))
+		if orderResult ~= nil and orderResult.IsAttack == true then
+			if orderResult.IsSuccessful == true then
+				-- Successful attack: attacker is the "last attacker" of the defender
+				local victimOfOrder = beforeOwners[order.To]
+				if victimOfOrder ~= nil and victimOfOrder ~= WL.PlayerID.Neutral then
+					lastAttackerByVictim[tostring(victimOfOrder)] = order.PlayerID
+					Log("  Tracked last attacker of " .. tostring(victimOfOrder) .. " = " .. tostring(order.PlayerID))
+				end
+			else
+				-- Failed attack: defender is the "last attacker" of the attacker
+				-- (handles commander death on failed attack — attacker dies, defender gets credit)
+				local defenderID = beforeOwners[order.To]
+				if defenderID ~= nil and defenderID ~= WL.PlayerID.Neutral then
+					lastAttackerByVictim[tostring(order.PlayerID)] = defenderID
+					Log("  Tracked last attacker of " .. tostring(order.PlayerID) .. " = " .. tostring(defenderID) .. " (failed attack)")
+				end
 			end
 		end
 	end

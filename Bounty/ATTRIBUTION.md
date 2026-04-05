@@ -105,10 +105,18 @@ Attribution:
 Trigger:   C attacks D's territory. C's commander dies in the battle.
            Engine cascades: all C's territories → Neutral, C eliminated.
 Detection: Territory count misses it (BuildAfterOwners doesn't see cascade).
-           player.State catches it (C.State ≠ 2).
-Attribution:
+           player.State catches it IF immediate (C.State ≠ 2).
+Attribution (if detected on same _Order call):
   Priority 1 — order is attack, attacker IS victim (C = C),
                defender = D (beforeOwners[target]) → killer = D  ✓
+Attribution (if player.State is delayed — detected on later _Order or _End):
+  Priority 1 — later order is unrelated → nil
+  Priority 2 — no trap → nil
+  Priority 3 — lastAttacker[C] = D (tracked on the failed attack) → killer = D  ✓
+
+  BUG FIXED: lastAttackerByVictim now also tracks failed attacks.
+  On a failed attack, the defender is recorded as "last attacker" of the
+  attacker, so commander-death attribution works even with delayed State.
 ```
 
 ### Boot / surrender / vote-to-boot
