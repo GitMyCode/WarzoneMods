@@ -76,45 +76,6 @@ local function BuildOwnerByTerritory(game)
 	return owners
 end
 
---- Build afterOwners by copying beforeOwners and manually applying the known
---- effects of the current order. We cannot use order.StandingUpdates (it
---- crashes on Warzone proxy objects) or rely on LatestTurnStanding alone
---- (it may be stale by one order).
----@param beforeOwners table<TerritoryID, PlayerID>
----@param order GameOrder | nil
----@param orderResult GameOrderResult | nil
----@return table<TerritoryID, PlayerID>
-local function BuildAfterOwners(beforeOwners, order, orderResult)
-	local result = {}
-	for k, v in pairs(beforeOwners) do
-		result[k] = v
-	end
-
-	if order == nil then
-		return result
-	end
-
-	local proxyType = order.proxyType
-
-	-- Successful attack: attacked territory changes to attacker
-	if proxyType == "GameOrderAttackTransfer" then
-		if orderResult ~= nil and orderResult.IsAttack == true and orderResult.IsSuccessful == true then
-			result[order.To] = order.PlayerID
-		end
-		return result
-	end
-
-	-- Blockade/Abandon: territory becomes neutral
-	if proxyType == "GameOrderPlayCardBlockade" or proxyType == "GameOrderPlayCardAbandon" then
-		if order.TargetTerritoryID ~= nil then
-			result[order.TargetTerritoryID] = WL.PlayerID.Neutral
-		end
-		return result
-	end
-
-	return result
-end
-
 ---@param game GameServerHook
 ---@param owners table<TerritoryID, PlayerID>
 ---@return table<PlayerID, integer>
@@ -129,6 +90,43 @@ local function BuildCountsFromOwnerMap(game, owners)
 		end
 	end
 	return counts
+end
+
+--- Manually deduce afterOwners from beforeOwners + the current order's effect.
+--- This avoids reading LatestTurnStanding, which is one order behind in _Order.
+---@param beforeOwners table<TerritoryID, PlayerID>
+---@param order GameOrder
+---@param orderResult GameOrderResult
+---@return table<TerritoryID, PlayerID>
+local function BuildAfterOwners(beforeOwners, order, orderResult)
+	-- Start with a shallow copy
+	local after = {}
+	for terrID, ownerID in pairs(beforeOwners) do
+		after[terrID] = ownerID
+	end
+
+	if order == nil then
+		return after
+	end
+
+	-- Successful attack: attacker takes the target territory
+	if order.proxyType == "GameOrderAttackTransfer" then
+		if orderResult ~= nil and orderResult.IsAttack == true and orderResult.IsSuccessful == true then
+			after[order.To] = order.PlayerID
+		end
+		return after
+	end
+
+	-- Blockade or Abandon: territory becomes Neutral
+	if order.proxyType == "GameOrderPlayCardBlockade" or order.proxyType == "GameOrderPlayCardAbandon" then
+		local terrID = order.TargetTerritoryID
+		if terrID ~= nil then
+			after[terrID] = WL.PlayerID.Neutral
+		end
+		return after
+	end
+
+	return after
 end
 
 ---@param settings table
@@ -234,31 +232,35 @@ local function UpdateTrapOwnershipForOrder(order, afterOwners, trapOwners)
 	Log("Trap set on territory " .. tostring(terrID) .. " by " .. tostring(order.PlayerID))
 end
 
+--- Check if the victim died by attacking a trapped territory.
+--- This handles commander cascades: victim attacks a blockaded Neutral territory,
+--- commander dies in the battle, engine cascades all victim's territories to Neutral.
+--- BuildAfterOwners can't see the cascade, but we know the victim attacked a trap.
 ---@param game GameServerHook
+---@param order GameOrder
 ---@param victimID PlayerID
----@param beforeOwners table<TerritoryID, PlayerID>
----@param afterOwners table<TerritoryID, PlayerID>
 ---@param trapOwners table<TerritoryID, PlayerID>
 ---@return PlayerID | nil
-local function ResolveTrapKiller(game, victimID, beforeOwners, afterOwners, trapOwners)
-	local chosenTerritory = nil
-	local chosenKiller = nil
-
-	for terrID, previousOwner in pairs(beforeOwners) do
-		if SamePlayerID(previousOwner, victimID) and afterOwners[terrID] == WL.PlayerID.Neutral then
-			local trapOwner = trapOwners[terrID]
-			if trapOwner ~= nil and not SamePlayerID(trapOwner, victimID) and trapOwner ~= WL.PlayerID.Neutral then
-				if game.Game.Players[trapOwner] ~= nil then
-					if chosenTerritory == nil or terrID < chosenTerritory then
-						chosenTerritory = terrID
-						chosenKiller = trapOwner
-					end
-				end
-			end
-		end
+local function ResolveTrapKiller(game, order, victimID, trapOwners)
+	if order == nil or order.proxyType ~= "GameOrderAttackTransfer" then
+		return nil
 	end
-
-	return chosenKiller
+	-- Victim must be the attacker (they died attacking the trap)
+	if not SamePlayerID(order.PlayerID, victimID) then
+		return nil
+	end
+	local targetTerr = order.To
+	if targetTerr == nil then
+		return nil
+	end
+	local trapOwner = trapOwners[targetTerr]
+	if trapOwner == nil or SamePlayerID(trapOwner, victimID) or trapOwner == WL.PlayerID.Neutral then
+		return nil
+	end
+	if game.Game.Players[trapOwner] == nil then
+		return nil
+	end
+	return trapOwner
 end
 
 ---@param game GameServerHook
@@ -354,6 +356,15 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 	local processedEliminations = publicData.BountyProcessedEliminations or {}
 	local lastAttackerByVictim = publicData.BountyLastAttackerByVictim or {}
 
+	-- === DIAGNOSTIC: log every player's State on every _Order call ===
+	-- This answers: does player.State update immediately on the same _Order
+	-- call where a commander cascade happens, or is it delayed?
+	for playerID, player in pairs(game.Game.Players) do
+		Log("  [DIAG] " .. PlayerName(game, playerID)
+			.. " State=" .. tostring(player.State)
+			.. " territories(beforeOwners)=" .. tostring(CountForPlayer(BuildCountsFromOwnerMap(game, beforeOwners), playerID)))
+	end
+
 	-- Log attack details if applicable
 	if order ~= nil and order.proxyType == "GameOrderAttackTransfer" then
 		local toTerr = order.To
@@ -366,7 +377,8 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 			.. " isAttack=" .. tostring(isAttack) .. " isSuccessful=" .. tostring(isSuccessful))
 	end
 
-	-- Build afterOwners by manually applying this order's effects
+	-- Manually deduce afterOwners from beforeOwners + order effect.
+	-- We cannot use LatestTurnStanding here because it is one order behind.
 	local afterOwners = BuildAfterOwners(beforeOwners, order, orderResult)
 
 	-- Log ownership changes from this order
@@ -450,7 +462,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 
 		-- Try trap attribution
 		if killerID == nil then
-			local trapKiller = ResolveTrapKiller(game, victimID, beforeOwners, afterOwners, trapOwners)
+			local trapKiller = ResolveTrapKiller(game, order, victimID, trapOwners)
 			if trapKiller ~= nil then
 				killerID = trapKiller
 				Log("    -> Killer from trap: " .. PlayerName(game, killerID))
