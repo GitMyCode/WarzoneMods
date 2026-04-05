@@ -10,7 +10,7 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 
 	local vert = UI.CreateVerticalLayoutGroup(rootParent)
 
-	UI.CreateLabel(vert).SetText("🎯 Assassin Mode").SetColor("#FF4444")
+	UI.CreateLabel(vert).SetText("Assassin Mode").SetColor("#FF4444")
 	UI.CreateLabel(vert).SetText(" ")
 
 	local publicData = Mod.PublicGameData or {}
@@ -73,10 +73,10 @@ function ShowPostGameUI(vert, game, publicData)
 
 			local marker = ""
 			if winnerID and pid == winnerID then
-				marker = " ★"
+				marker = " (WINNER)"
 			end
 
-			UI.CreateLabel(vert).SetText(assassinName .. " → " .. tName .. marker)
+			UI.CreateLabel(vert).SetText(assassinName .. " -> " .. tName .. marker)
 		end
 	end
 end
