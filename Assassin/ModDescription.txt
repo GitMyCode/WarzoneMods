@@ -1,9 +1,9 @@
 Assassin Mode
 
-Each player is secretly assigned a target at the start of the game. The first player to eliminate their target wins immediately!
+Each player is secretly assigned a target at the start of the game. When your target is eliminated — by you or by anyone else — you win immediately!
 
 Your target is shown in the Mod menu and in a popup when you first join the game. Targets are assigned in a circular pattern to ensure everyone has exactly one target and is someone else's target.
 
-The game ends immediately when a player successfully eliminates their assigned target - all other players' territories are transferred to neutral, declaring the assassin the winner.
+The game ends immediately when any player's assigned target is eliminated — all other players' territories are transferred to neutral, declaring the assassin the winner. Be careful who you attack — you might be helping your enemy win!
 
 Compatible with any map and most game settings. Best played with 4+ players for maximum intrigue!
