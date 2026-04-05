@@ -1,10 +1,15 @@
 require("Util/AssassinUtil")
 
----End the game (neutralize everyone except the winner)
+---End the game (neutralize everyone except the winner).
+---When called from _Order, pass the current order/orderResult so we can
+---correct for LatestTurnStanding being one order behind (stale).
+---When called from _End, pass nil — the standing is fully up-to-date there.
 ---@param game GameServerHook
 ---@param addNewOrder fun(order: GameOrder)
+---@param currentOrder GameOrder | nil
+---@param currentOrderResult GameOrderResult | nil
 ---@return boolean
-local function EndGameIfWinnerLatched(game, addNewOrder)
+local function EndGameIfWinnerLatched(game, addNewOrder, currentOrder, currentOrderResult)
 	local publicData = Mod.PublicGameData or {}
 	local winnerID = publicData.AssassinWinnerID
 	local targetID = publicData.AssassinWinnerTargetID
@@ -22,14 +27,59 @@ local function EndGameIfWinnerLatched(game, addNewOrder)
 	local target = targetID and game.Game.Players[targetID] or nil
 	local targetName = target and target.DisplayName(nil, false) or (targetID and tostring(targetID) or "their target")
 
+	-- Neutralize every territory not owned by the winner.
+	--
+	-- STALE STANDING NOTE: In _Order, LatestTurnStanding is one order behind.
+	-- If the winner just captured a territory in the current order, the standing
+	-- still shows the old owner. We protect that territory so the winner keeps it.
+	-- See ENGINE_FINDINGS.md for the full timing proof.
+	local winnerJustCaptured = nil
+	if currentOrder and currentOrderResult
+		and currentOrder.proxyType == "GameOrderAttackTransfer"
+		and currentOrderResult.IsAttack == true
+		and currentOrderResult.IsSuccessful == true
+		and currentOrder.PlayerID == winnerID then
+		winnerJustCaptured = currentOrder.To
+		print("[Assassin] Winner just captured terr " .. tostring(winnerJustCaptured)
+			.. " (not yet in standing), protecting it")
+	end
+
 	local mods = {}
 	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-		if terr.OwnerPlayerID ~= WL.PlayerID.Neutral and terr.OwnerPlayerID ~= winnerID then
-			local mod = WL.TerritoryModification.Create(terr.ID)
-			mod.SetOwnerOpt = WL.PlayerID.Neutral
-			table.insert(mods, mod)
+		local terrID = terr.ID
+
+		-- Skip territories owned by the winner
+		if terr.OwnerPlayerID == winnerID then
+			goto continue
+		end
+
+		-- Skip the territory the winner just captured (stale standing still shows old owner)
+		if winnerJustCaptured and terrID == winnerJustCaptured then
+			goto continue
+		end
+
+		-- Neutralize everything else — even already-neutral territories.
+		-- Redundant but safe: covers every possible edge case.
+		local mod = WL.TerritoryModification.Create(terrID)
+		mod.SetOwnerOpt = WL.PlayerID.Neutral
+		table.insert(mods, mod)
+
+		::continue::
+	end
+
+	-- Publish all target assignments so the post-game menu can reveal them.
+	-- Keys are PlayerIDs; Warzone serializes them as JSON numbers which
+	-- round-trip fine through Mod.PublicGameData.
+	local allTargets = {}
+	local playerDataTable = Mod.PlayerGameData
+	if playerDataTable then
+		for pid, pdata in pairs(playerDataTable) do
+			if pdata and pdata.Target then
+				allTargets[pid] = pdata.Target
+			end
 		end
 	end
+	publicData.AllTargets = allTargets
 
 	publicData.AssassinGameEnded = true
 	Mod.PublicGameData = publicData
@@ -47,7 +97,7 @@ local function EndGameIfWinnerLatched(game, addNewOrder)
 		)
 	)
 
-	print("[Assassin] Game ending order added")
+	print("[Assassin] Game ending order added with " .. #mods .. " territory modifications")
 	return true
 end
 
@@ -73,7 +123,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 	local eliminatedTargetID = eliminatedTargets[1]
 	if eliminatedTargetID ~= nil then
 		LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
-		EndGameIfWinnerLatched(game, addNewOrder)
+		EndGameIfWinnerLatched(game, addNewOrder, order, orderResult)
 	end
 end
 
@@ -86,5 +136,5 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	if eliminatedTargetID ~= nil then
 		LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
 	end
-	EndGameIfWinnerLatched(game, addNewOrder)
+	EndGameIfWinnerLatched(game, addNewOrder, nil, nil)
 end
