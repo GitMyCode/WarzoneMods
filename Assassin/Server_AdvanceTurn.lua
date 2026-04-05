@@ -47,24 +47,14 @@ local function EndGameIfWinnerLatched(game, addNewOrder, currentOrder, currentOr
 	local mods = {}
 	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		local terrID = terr.ID
+		local isWinnerTerritory = terr.OwnerPlayerID == winnerID
+			or (winnerJustCaptured and terrID == winnerJustCaptured)
 
-		-- Skip territories owned by the winner
-		if terr.OwnerPlayerID == winnerID then
-			goto continue
+		if not isWinnerTerritory then
+			local mod = WL.TerritoryModification.Create(terrID)
+			mod.SetOwnerOpt = WL.PlayerID.Neutral
+			table.insert(mods, mod)
 		end
-
-		-- Skip the territory the winner just captured (stale standing still shows old owner)
-		if winnerJustCaptured and terrID == winnerJustCaptured then
-			goto continue
-		end
-
-		-- Neutralize everything else — even already-neutral territories.
-		-- Redundant but safe: covers every possible edge case.
-		local mod = WL.TerritoryModification.Create(terrID)
-		mod.SetOwnerOpt = WL.PlayerID.Neutral
-		table.insert(mods, mod)
-
-		::continue::
 	end
 
 	-- Publish all target assignments so the post-game menu can reveal them.
