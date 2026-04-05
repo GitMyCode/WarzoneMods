@@ -1,8 +1,6 @@
-FixedTroopsRewardInput = nil
-FixedGoldRewardInput = nil
+BountyRewardInput = nil
 
-local DEFAULT_TROOPS_REWARD = 10
-local DEFAULT_GOLD_REWARD = 10
+local DEFAULT_REWARD = 10
 
 ---@param value any
 ---@param fallback integer
@@ -25,23 +23,15 @@ function Client_PresentConfigureUI(rootParent)
 		Mod.Settings = {}
 	end
 
-	local troopsReward = ReadNonNegativeInt(Mod.Settings and Mod.Settings.FixedTroopsReward, DEFAULT_TROOPS_REWARD)
-	local goldReward = ReadNonNegativeInt(Mod.Settings and Mod.Settings.FixedGoldReward, DEFAULT_GOLD_REWARD)
+	local reward = ReadNonNegativeInt(Mod.Settings and Mod.Settings.BountyReward, DEFAULT_REWARD)
 
 	UI.CreateLabel(rootParent).SetText("Bounty Mode settings")
-	UI.CreateLabel(rootParent).SetText("Normal games use troops reward. Commerce games use gold reward.")
+	UI.CreateLabel(rootParent).SetText("Players earn bonus armies for eliminating another player.")
 
-	local troopsRow = UI.CreateHorizontalLayoutGroup(rootParent)
-	UI.CreateLabel(troopsRow).SetText("Fixed troops reward:")
-	FixedTroopsRewardInput = UI.CreateNumberInputField(troopsRow)
-	FixedTroopsRewardInput.SetSliderMinValue(0)
-	FixedTroopsRewardInput.SetSliderMaxValue(250)
-	FixedTroopsRewardInput.SetValue(troopsReward)
-
-	local goldRow = UI.CreateHorizontalLayoutGroup(rootParent)
-	UI.CreateLabel(goldRow).SetText("Fixed gold reward (Commerce):")
-	FixedGoldRewardInput = UI.CreateNumberInputField(goldRow)
-	FixedGoldRewardInput.SetSliderMinValue(0)
-	FixedGoldRewardInput.SetSliderMaxValue(250)
-	FixedGoldRewardInput.SetValue(goldReward)
+	local row = UI.CreateHorizontalLayoutGroup(rootParent)
+	UI.CreateLabel(row).SetText("Bounty reward (armies):")
+	BountyRewardInput = UI.CreateNumberInputField(row)
+	BountyRewardInput.SetSliderMinValue(0)
+	BountyRewardInput.SetSliderMaxValue(250)
+	BountyRewardInput.SetValue(reward)
 end

@@ -1,5 +1,4 @@
-local DEFAULT_TROOPS_REWARD = 10
-local DEFAULT_GOLD_REWARD = 10
+local DEFAULT_REWARD = 10
 
 ---@param message string
 local function Log(message)
@@ -145,12 +144,6 @@ local function GetNonNegativeIntSetting(settings, key, defaultValue)
 	return value
 end
 
----@param game GameServerHook
----@return boolean
-local function IsCommerceGame(game)
-	return game ~= nil and game.Settings ~= nil and game.Settings.CommerceGame == true
-end
-
 ---@param order GameOrder
 ---@param orderResult GameOrderResult
 ---@param beforeOwners table<TerritoryID, PlayerID>
@@ -273,50 +266,25 @@ local function GrantEliminationReward(game, killerID, victimID, addNewOrder)
 	local killerName = killer and killer.DisplayName(nil, false) or tostring(killerID)
 	local victimName = victim and victim.DisplayName(nil, false) or tostring(victimID)
 
-	if IsCommerceGame(game) then
-		local goldReward = GetNonNegativeIntSetting(Mod.Settings, "FixedGoldReward", DEFAULT_GOLD_REWARD)
-		if goldReward <= 0 then
-			Log("Skipped gold reward (configured amount is 0)")
-			return
-		end
-
-		local rewardOrder = WL.GameOrderEvent.Create(
-			killerID,
-			"Bounty: " .. killerName .. " earned +" .. tostring(goldReward) .. " gold for eliminating " .. victimName,
-			nil,
-			nil,
-			nil,
-			nil
-		)
-		rewardOrder.AddResourceOpt = {
-			[killerID] = {
-				[WL.ResourceType.Gold] = goldReward,
-			},
-		}
-		addNewOrder(rewardOrder)
-		Log("REWARD: +" .. tostring(goldReward) .. " gold to " .. killerName .. " for eliminating " .. victimName)
+	local reward = GetNonNegativeIntSetting(Mod.Settings, "BountyReward", DEFAULT_REWARD)
+	if reward <= 0 then
+		Log("Skipped reward (configured amount is 0)")
 		return
 	end
 
-	local troopsReward = GetNonNegativeIntSetting(Mod.Settings, "FixedTroopsReward", DEFAULT_TROOPS_REWARD)
-	if troopsReward <= 0 then
-		Log("Skipped troops reward (configured amount is 0)")
-		return
-	end
-
-	local reinforcement = WL.ReinforcementCardInstance.Create(troopsReward)
+	local reinforcement = WL.ReinforcementCardInstance.Create(reward)
 	addNewOrder(WL.GameOrderReceiveCard.Create(killerID, { reinforcement }))
 	addNewOrder(
 		WL.GameOrderEvent.Create(
 			killerID,
-			"Bounty: " .. killerName .. " earned +" .. tostring(troopsReward) .. " troops for eliminating " .. victimName,
+			"Bounty: " .. killerName .. " earned +" .. tostring(reward) .. " armies for eliminating " .. victimName,
 			nil,
 			nil,
 			nil,
 			nil
 		)
 	)
-	Log("REWARD: +" .. tostring(troopsReward) .. " troops to " .. killerName .. " for eliminating " .. victimName)
+	Log("REWARD: +" .. tostring(reward) .. " armies to " .. killerName .. " for eliminating " .. victimName)
 end
 
 -- ============================================================================
