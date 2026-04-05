@@ -2,9 +2,7 @@ Bounty Mode
 
 Eliminate players to earn rewards.
 
-Each time you eliminate another player, you get a configurable fixed reward:
-- Normal games: fixed troops reward
-- Commerce games: fixed gold reward
+Each time you eliminate another player, you receive a configurable bonus army reinforcement card.
 
 Kills are attributed to the decisive order:
 - Successful attack: attacker gets the reward
