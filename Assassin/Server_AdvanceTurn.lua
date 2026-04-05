@@ -57,6 +57,28 @@ local function EndGameIfWinnerLatched(game, addNewOrder, currentOrder, currentOr
 		end
 	end
 
+	-- Safety: explicitly reassign all winner territories back to the winner.
+	-- This guarantees the winner keeps their land even if:
+	--   1. The current order captured a territory FROM the winner (stale
+	--      standing still shows the winner owning it, so we skipped it
+	--      above, but the engine applied the capture before our event).
+	--   2. Another mod's GameOrderEvent removed the winner from the map.
+	-- By re-stamping ownership in our event, we override both cases.
+	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
+		if terr.OwnerPlayerID == winnerID then
+			local mod = WL.TerritoryModification.Create(terr.ID)
+			mod.SetOwnerOpt = winnerID
+			table.insert(mods, mod)
+		end
+	end
+
+	-- Also reassign the territory the winner just captured (not yet in standing)
+	if winnerJustCaptured then
+		local mod = WL.TerritoryModification.Create(winnerJustCaptured)
+		mod.SetOwnerOpt = winnerID
+		table.insert(mods, mod)
+	end
+
 	-- Publish all target assignments so the post-game menu can reveal them.
 	-- Keys are PlayerIDs; Warzone serializes them as JSON numbers which
 	-- round-trip fine through Mod.PublicGameData.
