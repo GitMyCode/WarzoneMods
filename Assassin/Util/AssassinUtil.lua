@@ -94,6 +94,7 @@ function FindAssassinForTarget(targetPlayerID)
 end
 
 ---Latch the assassin winner when the eliminated target is known.
+---Only latches if the assassin is still alive (State == Playing).
 ---@param game GameServerHook
 ---@param eliminatedTargetID PlayerID
 ---@return PlayerID | nil
@@ -105,6 +106,18 @@ function LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
 
 	local assassinID = FindAssassinForTarget(eliminatedTargetID)
 	if assassinID == nil then
+		return nil
+	end
+
+	-- Don't latch a dead assassin as the winner.
+	-- If the assassin was eliminated before (or at the same time as) their target,
+	-- they can't win. player.State may be delayed by one _Order call, but by the
+	-- time we detect the TARGET's elimination, the assassin's state is reliable.
+	local PLAYING = 2
+	local assassin = game.Game.Players[assassinID]
+	if assassin == nil or assassin.State ~= PLAYING then
+		local stateName = assassin and tostring(assassin.State) or "nil"
+		print("[Assassin] Assassin " .. tostring(assassinID) .. " is not alive (state=" .. stateName .. "), skipping latch")
 		return nil
 	end
 

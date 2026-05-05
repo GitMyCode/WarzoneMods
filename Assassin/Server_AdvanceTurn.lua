@@ -1,15 +1,13 @@
 require("Util/AssassinUtil")
 
 ---End the game (neutralize everyone except the winner).
----When called from _Order, pass the current order/orderResult so we can
----correct for LatestTurnStanding being one order behind (stale).
----When called from _End, pass nil — the standing is fully up-to-date there.
+---Since we always skipThisOrder in _Order before calling this, the standing
+---is never stale — no current-order correction is needed.
+---In _End the standing is also fully up-to-date.
 ---@param game GameServerHook
 ---@param addNewOrder fun(order: GameOrder)
----@param currentOrder GameOrder | nil
----@param currentOrderResult GameOrderResult | nil
 ---@return boolean
-local function EndGameIfWinnerLatched(game, addNewOrder, currentOrder, currentOrderResult)
+local function EndGameIfWinnerLatched(game, addNewOrder)
 	local publicData = Mod.PublicGameData or {}
 	local winnerID = publicData.AssassinWinnerID
 	local targetID = publicData.AssassinWinnerTargetID
@@ -28,42 +26,18 @@ local function EndGameIfWinnerLatched(game, addNewOrder, currentOrder, currentOr
 	local targetName = target and target.DisplayName(nil, false) or (targetID and tostring(targetID) or "their target")
 
 	-- Neutralize every territory not owned by the winner.
-	--
-	-- STALE STANDING NOTE: In _Order, LatestTurnStanding is one order behind.
-	-- If the winner just captured a territory in the current order, the standing
-	-- still shows the old owner. We protect that territory so the winner keeps it.
-	-- See ENGINE_FINDINGS.md for the full timing proof.
-	local winnerJustCaptured = nil
-	if currentOrder and currentOrderResult
-		and currentOrder.proxyType == "GameOrderAttackTransfer"
-		and currentOrderResult.IsAttack == true
-		and currentOrderResult.IsSuccessful == true
-		and currentOrder.PlayerID == winnerID then
-		winnerJustCaptured = currentOrder.To
-		print("[Assassin] Winner just captured terr " .. tostring(winnerJustCaptured)
-			.. " (not yet in standing), protecting it")
-	end
-
 	local mods = {}
 	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-		local terrID = terr.ID
-		local isWinnerTerritory = terr.OwnerPlayerID == winnerID
-			or (winnerJustCaptured and terrID == winnerJustCaptured)
-
-		if not isWinnerTerritory then
-			local mod = WL.TerritoryModification.Create(terrID)
+		if terr.OwnerPlayerID ~= winnerID then
+			local mod = WL.TerritoryModification.Create(terr.ID)
 			mod.SetOwnerOpt = WL.PlayerID.Neutral
 			table.insert(mods, mod)
 		end
 	end
 
-	-- Safety: explicitly reassign all winner territories back to the winner.
-	-- This guarantees the winner keeps their land even if:
-	--   1. The current order captured a territory FROM the winner (stale
-	--      standing still shows the winner owning it, so we skipped it
-	--      above, but the engine applied the capture before our event).
-	--   2. Another mod's GameOrderEvent removed the winner from the map.
-	-- By re-stamping ownership in our event, we override both cases.
+	-- Safety: explicitly re-stamp all winner territories back to the winner.
+	-- This is redundant but guarantees the winner keeps their land even if
+	-- another mod's GameOrderEvent or an edge case removed them from the map.
 	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if terr.OwnerPlayerID == winnerID then
 			local mod = WL.TerritoryModification.Create(terr.ID)
@@ -72,16 +46,7 @@ local function EndGameIfWinnerLatched(game, addNewOrder, currentOrder, currentOr
 		end
 	end
 
-	-- Also reassign the territory the winner just captured (not yet in standing)
-	if winnerJustCaptured then
-		local mod = WL.TerritoryModification.Create(winnerJustCaptured)
-		mod.SetOwnerOpt = winnerID
-		table.insert(mods, mod)
-	end
-
 	-- Publish all target assignments so the post-game menu can reveal them.
-	-- Keys are PlayerIDs; Warzone serializes them as JSON numbers which
-	-- round-trip fine through Mod.PublicGameData.
 	local allTargets = {}
 	local playerDataTable = Mod.PlayerGameData
 	if playerDataTable then
@@ -130,12 +95,50 @@ end
 ---@param skipThisOrder fun(modOrderControl: EnumModOrderControl) # Allows you to skip the current order
 ---@param addNewOrder fun(order: GameOrder, skipIfOriginalSkipped?: boolean) # Adds a game order, will be processed before any of the rest of the orders
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
+	local publicData = Mod.PublicGameData or {}
+
+	-- If the game has already ended, skip all remaining player orders.
+	-- Let GameOrderEvents through — our neutralization event may re-trigger _Order.
+	if publicData.AssassinGameEnded then
+		if order.proxyType ~= "GameOrderEvent" then
+			print("[Assassin] Game already ended, skipping order: " .. tostring(order.proxyType))
+			skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage)
+		end
+		return
+	end
+
+	-- If a winner is latched but the game-ending event hasn't been emitted yet,
+	-- skip all remaining orders until we can emit from _End.
+	if publicData.AssassinWinnerID ~= nil then
+		if order.proxyType ~= "GameOrderEvent" then
+			print("[Assassin] Winner latched, skipping order: " .. tostring(order.proxyType))
+			skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage)
+		end
+		return
+	end
+
+	-- Check for newly eliminated players (target detection).
 	local eliminatedTargets = IsPlayersEliminatedByState(game)
 	print("[Assassin] Eliminated targets this order check: " .. tostring(#eliminatedTargets))
-	local eliminatedTargetID = eliminatedTargets[1]
-	if eliminatedTargetID ~= nil then
-		LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
-		EndGameIfWinnerLatched(game, addNewOrder, order, orderResult)
+
+	-- Try to latch a winner from any eliminated target.
+	for _, eliminatedTargetID in ipairs(eliminatedTargets) do
+		local assassinID = LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
+		if assassinID ~= nil then
+			break
+		end
+	end
+
+	-- If we just latched a winner, skip the current order (prevents the winner
+	-- from being killed by their own fatal order) and emit the game-ending event.
+	-- Re-read publicData since LatchAssassinWinnerFromEliminatedTarget writes
+	-- directly to Mod.PublicGameData.
+	publicData = Mod.PublicGameData or {}
+	if publicData.AssassinWinnerID ~= nil then
+		print("[Assassin] Winner detected in _Order, skipping current order and ending game")
+		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage)
+		EndGameIfWinnerLatched(game, addNewOrder)
+		return
 	end
 end
 
@@ -143,10 +146,14 @@ end
 ---@param game GameServerHook
 ---@param addNewOrder fun(order: GameOrder) # Adds a game order, will be processed before any of the rest of the orders
 function Server_AdvanceTurn_End(game, addNewOrder)
+	-- Fallback: iterate all eliminated targets in case _Order missed any
+	-- (e.g. GameOrderStateTransition doesn't fire _Order).
 	local eliminatedTargets = IsPlayersEliminatedByState(game)
-	local eliminatedTargetID = eliminatedTargets[1]
-	if eliminatedTargetID ~= nil then
-		LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
+	for _, eliminatedTargetID in ipairs(eliminatedTargets) do
+		local assassinID = LatchAssassinWinnerFromEliminatedTarget(game, eliminatedTargetID)
+		if assassinID ~= nil then
+			break
+		end
 	end
-	EndGameIfWinnerLatched(game, addNewOrder, nil, nil)
+	EndGameIfWinnerLatched(game, addNewOrder)
 end
