@@ -9,6 +9,8 @@ The playable mod lives in `Assassin/`, and `Annotations.lua` provides Warzone AP
 
 **Instruction Sources**
 Repository-specific agent guidance already exists in `.github/copilot-instructions.md`.
+`ENGINE_FINDINGS.md` documents proven Warzone engine behaviors from diagnostic testing.
+`ENGINE_FLOW.md` describes the theoretical hook lifecycle (note: some assumptions were disproven — see `ENGINE_FINDINGS.md`).
 No `.cursorrules` file was found.
 No `.cursor/rules/` directory was found.
 This file incorporates the useful parts of the Copilot instructions and adds command/style guidance.
@@ -20,6 +22,8 @@ This file incorporates the useful parts of the Copilot instructions and adds com
 `Assassin/README.md` explains the mod behavior and LuaLS setup.
 `Assassin/ModDescription.txt` is the in-game mod description.
 `Annotations.lua` provides Warzone API types for LuaLS.
+`ENGINE_FINDINGS.md` documents proven engine behaviors, crash patterns, and API alternatives.
+`ENGINE_FLOW.md` describes the theoretical hook lifecycle.
 `.vscode/settings.json` shows the intended editor setup.
 
 **Important Files**
@@ -27,6 +31,7 @@ Start with `Assassin/Server_StartGame.lua` and `Assassin/Server_StartDistributio
 Use `Assassin/Server_AdvanceTurn.lua` for elimination and winner resolution.
 Use `Assassin/Server_GameCustomMessage.lua` and `Assassin/Client_GameRefresh.lua` for server/client synchronization and popup timing.
 Use `Assassin/Client_PresentMenuUI.lua` and `Assassin/Util/AssassinUtil.lua` for the menu and shared Assassin-specific logic.
+`ENGINE_FINDINGS.md` documents proven engine behaviors (hook lifecycle, API quirks, crash patterns) discovered through diagnostic testing. Always consult it before working with Warzone engine APIs — it supersedes `ENGINE_FLOW.md` where they conflict.
 
 **Build / Run / Validation Commands**
 There is no build system in this repo and no `package.json`, `Makefile`, rockspec, or CI workflow.
@@ -149,3 +154,4 @@ This is a small Lua Warzone mod, not a compiled application.
 There is no build pipeline and no automated tests.
 The best automated validation available in-repo is Lua syntax checking with `luac -p`, and most correctness checking still requires a focused manual Warzone scenario.
 Follow existing hook names, keep state management explicit, and preserve local file style.
+Before using any Warzone engine API in an unfamiliar way, check `ENGINE_FINDINGS.md` — it documents tested engine behaviors including hook timing, API crashes, and recommended alternatives (e.g., use `IncomeMod` instead of `ReinforcementCardInstance` for granting armies).

@@ -150,6 +150,57 @@ state across orders.
 
 ---
 
+## 7. ReinforcementCardInstance Crashes If Reinforcement Card Not Configured
+
+**Status**: Proven
+
+`WL.ReinforcementCardInstance.Create(armies)` internally creates a card instance
+referencing card ID 1 (the default reinforcement card). When
+`WL.GameOrderReceiveCard.Create` processes this instance, the engine validates
+that card ID 1 exists in `game.Game.Cards`. If the game was created without a
+reinforcement card (card 1 is absent), the engine throws:
+
+```
+MoonSharp.Interpreter.ScriptRuntimeException: GameOrderReceiveCard was passed card 1 which is not in the game
+```
+
+### Evidence
+
+Reproduced in game 44306687 (World Big, commerce mode). The game's card
+configuration included Spy, Order Priority, Order Delay, Airlift, Gift,
+Reconnaissance, and Surveillance cards — but no Reinforcement Card.
+
+### Replacement: WL.IncomeMod
+
+Do not use `ReinforcementCardInstance` + `GameOrderReceiveCard` to grant armies.
+Use `WL.IncomeMod.Create(playerID, amount, description)` instead. It:
+
+- Gives the player **deployable income** they can place anywhere (same UX as a reinforcement card)
+- Works regardless of card configuration (no dependency on card ID 1)
+- Is passed as the `incomeModsOpt` (6th parameter) to `GameOrderEvent.Create`
+
+```lua
+-- ❌ Crashes if no reinforcement card configured:
+local card = WL.ReinforcementCardInstance.Create(reward)
+addNewOrder(WL.GameOrderReceiveCard.Create(playerID, { card }))
+
+-- ✅ Works universally:
+local incomeMod = WL.IncomeMod.Create(playerID, reward, "Bounty: +5 armies")
+addNewOrder(WL.GameOrderEvent.Create(playerID, msg, nil, nil, nil, { incomeMod }))
+```
+
+### API Reference
+
+- `WL.IncomeMod.Create(pid: PlayerID, mod: integer, msg: string, bonusIDOpt?: BonusID): IncomeMod`
+- `GameOrderEvent.Create(playerID, message, visibleToOpt, terrModsOpt, setResourcesOpt, incomeModsOpt)`
+
+### Used By
+
+GiftArmies2Mod, Capture The Flag, Forced LD Card, Dynamic Bonuses, Commerce plus
+Goldmines, Extended Hybrid Distribution, and others.
+
+---
+
 ## The Assassin Stale-Territory Bug
 
 ### Symptom
