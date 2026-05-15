@@ -1,0 +1,327 @@
+GAME SETTINGS:
+Name:?World Big cmdr + commerceTemplate Used:?World Big cmdr commerceMap:?World BigView MapDate Created:2026-05-10 11:50:03Created By (host):
+L15 Anthony Lucci 
+Link:
+https://war.app/MultiPlayer?GameID=44306687
+All GuidesIconsAutomatic territory distribution: Players don't get to pick what territories they're given at the start of the gameCommanders: Each player receives a commander at the start of the game.  Commanders are worth 7 armies and cannot be partially damaged.  If a commander dies, that player is eliminated from the game.Cards: Commerce game: You get gold to spend on armies instead of getting armies directlyPractice game: No points or achievements can be earnedMods:
+Tanks
+Gift Gold
+Artillery Strike
+Bounty
+Tank Card
+AI's don't play cardsArmies can attack multiple times per turn, allowing them to move across the map in a single turnHighlighted Settings?Multi-attack:?OnBasicRanked or Practice:?PracticePrivate messaging:?AllowedTeams:?Manual teamsOpen seat prerequisites:?1 prerequisiteViewBoot / SurrenderGame Pace:?Multi-Day GamePlayers can be directly booted if they don't take their turn after:?10 daysPlayers are automatically booted after:?NeverPlayers on vacation:?Cannot be bootedBooted players turn into AIs:?NoSurrendered players turn into AIs:?NoSurrenders must be accepted:?NoAIs surrender when one human remains:?NoInitial Territory DistributionAutomatic or Manual distribution:?AutomaticDistribution mode:?Full distributionTerritory limit per player:?3Initial armies per player territory:?5Armies per neutral territory (non-distribution):?2Armies per neutral territory (in-distribution):?2Wastelands:?0CardsSpy Card:?In 6 pieces to last for 2 turns. Can spy on neutral. (minimum 1 piece per turn)Order Priority Card:?In 5 pieces (minimum 1 piece per turn)Order Delay Card:?In 5 pieces (minimum 1 piece per turn)Airlift Card:?In 6 pieces (minimum 1 piece per turn)Gift Card:?In 9 pieces (minimum 1 piece per turn)Reconnaissance Card:?In 3 pieces to last for 1 turn. (minimum 1 piece per turn)Surveillance Card:?In 5 pieces to last for 2 turns. (minimum 1 piece per turn)Number of card pieces you get per turn:?9Maximum number of cards you can hold:?7Visibility of opponent's playing cards:?HiddenVisibility of opponent's cards:?HiddenArmiesFog:?Normal FogCommanders:?OnOne Army Must Stand Guard:?OffMulti-attack:?OnMove order:?CycleBase armies per turn:?5Extra armies for territories:?NoneArmy cap:?OffLuck Modifier:?0%Rounding mode:?Straight roundOffensive kill rate:?60% (standard)Defensive kill rate:?70% (standard)Can attack by percentage:?NoCan transfer-only:?NoCan attack-only:?NoLocal deployments:?NoNo-Split Mode:?NoOverridden Bonuses:?NoneCommerce:?Yes, 0 army cost multiplierCity base cost:?5 gold6 Mods?ModTanksTank cost: 20Tank power: 10Max tanks: 2ModGift GoldModArtillery StrikePlayers get an artillery strike every 2 turns?Artillery strikes cost gold: No?Cannons are enabled: Yes?Number of cannons: 20?Maximum cannon damage: 40%?Minimum cannon damage: 20%?The maximum range of a cannon3?Mortars are enabled: Yes?Number of Mortars: 20?Damage of mortar: 30%?Maximum miss chance: 20%?Minimum miss chance: 10%?Maximum range of mortars: 3?Do not place artillery: No?ModBountyBounty ModeBounty reward: 5 armies per eliminationModTank CardModAI's don't play cardsAI's can play emergency blockade cards: NoAI's can play diplomacy cards: NoAI's can play sanctions cards: NoAI's can play blockade cards: NoAI's can play bomb cards: No
+
+
+###################################
+
+
+[string "Server_AdvanceTurn.lua"]:276: MoonSharp.Interpreter.ScriptRuntimeException: GameOrderReceiveCard was passed card 1 which is not in the game
+Create (External Function)
+GrantEliminationReward (Server_AdvanceTurn.lua:276)
+(Unknown Function) (Server_AdvanceTurn.lua:465)
+
+GameID=44306687
+Hook=Server_AdvanceTurn_Order
+
+
+
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=10
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=23
+[Bounty] --- Order: GameOrderAttackTransfer by -1008
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=10
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=23
+[Bounty]   Attack/Transfer: from=905 to=906 defender=-1008 isAttack=false isSuccessful=true
+[Bounty] --- Order: GameOrderAttackTransfer by -1005
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=10
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=23
+[Bounty]   Attack/Transfer: from=926 to=9211 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 9211 0 -> -1005
+[Bounty] --- Order: GameOrderAttackTransfer by -1013
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=10
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=23
+[Bounty]   Attack/Transfer: from=213 to=212 defender=1231560 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 212 1231560 -> -1013
+[Bounty]   Tracked last attacker of 1231560 = -1013
+[Bounty] --- Order: GameOrderAttackTransfer by -1011
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=1312 to=659 defender=-1011 isAttack=false isSuccessful=true
+[Bounty] --- Order: GameOrderAttackTransfer by -1003
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=762 to=763 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 763 0 -> -1003
+[Bounty] --- Order: GameOrderAttackTransfer by -1010
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=239 to=238 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 238 0 -> -1010
+[Bounty] --- Order: GameOrderAttackTransfer by -1007
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=1321 to=109 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 109 0 -> -1007
+[Bounty] --- Order: GameOrderAttackTransfer by -1009
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=110 to=1091 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 1091 0 -> -1009
+[Bounty] --- Order: GameOrderAttackTransfer by -1004
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=1143 to=1150 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 1150 0 -> -1004
+[Bounty] --- Order: GameOrderAttackTransfer by -1001
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=31
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=1703 to=1705 defender=1177396 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 1705 1177396 -> -1001
+[Bounty]   Tracked last attacker of 1177396 = -1001
+[Bounty] --- Order: GameOrderAttackTransfer by -1002
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=30
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=1141 to=1140 defender=-1002 isAttack=false isSuccessful=true
+[Bounty] --- Order: GameOrderAttackTransfer by -1012
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=30
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=1281 to=1301 defender=0 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 1301 0 -> -1012
+[Bounty] --- Order: GameOrderAttackTransfer by -1006
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=30
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=12
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=207 to=2071 defender=-1007 isAttack=false isSuccessful=true
+[Bounty] --- Order: GameOrderAttackTransfer by 1231560
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=30
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=2 territories(beforeOwners)=6
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=12
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=22
+[Bounty]   Attack/Transfer: from=651 to=131 defender=-1010 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 131 -1010 -> 1231560
+[Bounty]   Tracked last attacker of -1010 = 1231560
+[Bounty] --- Order: GameOrderAttackTransfer by 1177396
+[Bounty]   [DIAG] Anthony Lucci State=2 territories(beforeOwners)=30
+[Bounty]   [DIAG] AI 1 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] AI 2 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 3 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 4 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 5 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 6 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 7 State=2 territories(beforeOwners)=7
+[Bounty]   [DIAG] AI 8 State=2 territories(beforeOwners)=8
+[Bounty]   [DIAG] AI 9 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 10 State=2 territories(beforeOwners)=15
+[Bounty]   [DIAG] AI 11 State=3 territories(beforeOwners)=5
+[Bounty]   [DIAG] AI 12 State=2 territories(beforeOwners)=14
+[Bounty]   [DIAG] AI 13 State=2 territories(beforeOwners)=12
+[Bounty]   [DIAG] AI 14 State=2 territories(beforeOwners)=11
+[Bounty]   [DIAG] Urethra Franklin State=2 territories(beforeOwners)=23
+[Bounty]   Attack/Transfer: from=94 to=988 defender=-1007 isAttack=true isSuccessful=true
+[Bounty]   Ownership change: territory 988 -1007 -> 1177396
+[Bounty]   Tracked last attacker of -1007 = 1177396
+[Bounty]   ELIMINATED (player.State=3): AI 11
+[Bounty]   Resolving killer for victim: AI 11
+[Bounty]     -> Killer from last-attacker tracking: Urethra Franklin

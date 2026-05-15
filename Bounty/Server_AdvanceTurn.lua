@@ -272,8 +272,7 @@ local function GrantEliminationReward(game, killerID, victimID, addNewOrder)
 		return
 	end
 
-	local reinforcement = WL.ReinforcementCardInstance.Create(reward)
-	addNewOrder(WL.GameOrderReceiveCard.Create(killerID, { reinforcement }))
+	local incomeMod = WL.IncomeMod.Create(killerID, reward, "Bounty: +" .. tostring(reward) .. " armies for eliminating " .. victimName)
 	addNewOrder(
 		WL.GameOrderEvent.Create(
 			killerID,
@@ -281,7 +280,7 @@ local function GrantEliminationReward(game, killerID, victimID, addNewOrder)
 			nil,
 			nil,
 			nil,
-			nil
+			{ incomeMod }
 		)
 	)
 	Log("REWARD: +" .. tostring(reward) .. " armies to " .. killerName .. " for eliminating " .. victimName)
