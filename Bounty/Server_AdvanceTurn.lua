@@ -1,4 +1,4 @@
-local DEFAULT_REWARD = 10
+require("Util/BountyReward")
 
 ---@param message string
 local function Log(message)
@@ -128,22 +128,6 @@ local function BuildAfterOwners(beforeOwners, order, orderResult)
 	return after
 end
 
----@param settings table
----@param key string
----@param defaultValue integer
----@return integer
-local function GetNonNegativeIntSetting(settings, key, defaultValue)
-	local value = settings and settings[key] or nil
-	if type(value) ~= "number" then
-		return defaultValue
-	end
-	value = math.floor(value)
-	if value < 0 then
-		return defaultValue
-	end
-	return value
-end
-
 ---@param order GameOrder
 ---@param orderResult GameOrderResult
 ---@param beforeOwners table<TerritoryID, PlayerID>
@@ -259,17 +243,19 @@ end
 ---@param game GameServerHook
 ---@param killerID PlayerID
 ---@param victimID PlayerID
+---@param reward integer
 ---@param addNewOrder fun(order: GameOrder)
-local function GrantEliminationReward(game, killerID, victimID, addNewOrder)
+---@return boolean
+local function GrantEliminationReward(game, killerID, victimID, reward, addNewOrder)
 	local killer = game.Game.Players[killerID]
 	local victim = game.Game.Players[victimID]
 	local killerName = killer and killer.DisplayName(nil, false) or tostring(killerID)
 	local victimName = victim and victim.DisplayName(nil, false) or tostring(victimID)
 
-	local reward = GetNonNegativeIntSetting(Mod.Settings, "BountyReward", DEFAULT_REWARD)
+	reward = BountyReadNonNegativeInt(reward, 0)
 	if reward <= 0 then
-		Log("Skipped reward (configured amount is 0)")
-		return
+		Log("Skipped reward (calculated amount is 0)")
+		return false
 	end
 
 	local incomeMod = WL.IncomeMod.Create(killerID, reward, "Bounty: +" .. tostring(reward) .. " armies for eliminating " .. victimName)
@@ -284,6 +270,17 @@ local function GrantEliminationReward(game, killerID, victimID, addNewOrder)
 		)
 	)
 	Log("REWARD: +" .. tostring(reward) .. " armies to " .. killerName .. " for eliminating " .. victimName)
+	return true
+end
+
+---@param publicData table
+local function AdvanceEscalatingRewardCountIfNeeded(publicData)
+	if BountyGetRewardMode(Mod.Settings) ~= BOUNTY_REWARD_MODE_ESCALATING then
+		return
+	end
+
+	publicData.BountyEscalatingRewardCount = BountyGetEscalatingRewardCount(publicData) + 1
+	Log("Escalating bounty reward count is now " .. tostring(publicData.BountyEscalatingRewardCount))
 end
 
 -- ============================================================================
@@ -294,9 +291,8 @@ end
 ---@param addNewOrder fun(order: GameOrder)
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	Log("=== Turn Start ===")
-	local publicData = Mod.PublicGameData or {}
+	local publicData = BountyEnsurePublicData(Mod.PublicGameData)
 	publicData.BountyPrevOwnerByTerritory = BuildOwnerByTerritory(game)
-	publicData.BountyTrapOwnerByTerritory = publicData.BountyTrapOwnerByTerritory or {}
 	publicData.BountyProcessedEliminations = publicData.BountyProcessedEliminations or {}
 	publicData.BountyLastAttackerByVictim = {} -- reset per-turn tracking
 	Mod.PublicGameData = publicData
@@ -317,7 +313,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 	-- Log FIRST before touching any order fields that might crash
 	Log("--- Order: " .. tostring(order and order.proxyType or "???") .. " by " .. tostring(order and order.PlayerID or "???"))
 
-	local publicData = Mod.PublicGameData or {}
+	local publicData = BountyEnsurePublicData(Mod.PublicGameData)
 	local beforeOwners = publicData.BountyPrevOwnerByTerritory or BuildOwnerByTerritory(game)
 	local trapOwners = publicData.BountyTrapOwnerByTerritory or {}
 	local processedEliminations = publicData.BountyProcessedEliminations or {}
@@ -461,7 +457,10 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		end
 
 		if killerID ~= nil then
-			GrantEliminationReward(game, killerID, victimID, addNewOrder)
+			local reward = BountyNextReward(Mod.Settings, publicData)
+			if GrantEliminationReward(game, killerID, victimID, reward, addNewOrder) then
+				AdvanceEscalatingRewardCountIfNeeded(publicData)
+			end
 		else
 			Log("    -> NO KILLER FOUND for " .. PlayerName(game, victimID) .. "; no bounty")
 		end
@@ -479,7 +478,7 @@ end
 ---@param addNewOrder fun(order: GameOrder)
 function Server_AdvanceTurn_End(game, addNewOrder)
 	Log("=== Turn End ===")
-	local publicData = Mod.PublicGameData or {}
+	local publicData = BountyEnsurePublicData(Mod.PublicGameData)
 	local processedEliminations = publicData.BountyProcessedEliminations or {}
 	local lastAttackerByVictim = publicData.BountyLastAttackerByVictim or {}
 
@@ -501,7 +500,10 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					and game.Game.Players[killerID] ~= nil
 				then
 					Log("  Late attribution: " .. PlayerName(game, killerID))
-					GrantEliminationReward(game, killerID, playerID, addNewOrder)
+					local reward = BountyNextReward(Mod.Settings, publicData)
+					if GrantEliminationReward(game, killerID, playerID, reward, addNewOrder) then
+						AdvanceEscalatingRewardCountIfNeeded(publicData)
+					end
 				else
 					Log("  No attribution available for late elimination of " .. PlayerName(game, playerID))
 				end

@@ -1,8 +1,8 @@
 Bounty Mode
 
-Eliminate players to earn rewards.
+Eliminate players to earn bonus armies.
 
-Each time you eliminate another player, you receive a configurable bonus army reinforcement card.
+The game creator can choose a fixed bounty amount or an escalating bounty that increases globally after each rewarded elimination. In escalating mode, the next bounty is shown in the mod menu.
 
 Kills are attributed to the decisive order:
 - Successful attack: attacker gets the reward
