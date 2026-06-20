@@ -1,8 +1,12 @@
 Bounty Mode
 
-Eliminate players to earn bonus armies.
+Eliminate players to earn bounties as bonus armies.
 
-The game creator can choose a fixed bounty amount or an escalating bounty that increases globally after each rewarded elimination. In escalating mode, the next bounty is shown in the mod menu.
+The game creator can choose one of four bounty styles:
+- Fixed bounty: every credited elimination pays the same amount.
+- Global bounty growth: every credited elimination increases everyone's bounty.
+- Kill-count bounty growth: each player's bounty grows from their own number of credited kills.
+- Stacking bounty: when a player eliminates someone, that player's bounty is added to the killer's own bounty.
 
 Kills are attributed to the decisive order:
 - Successful attack: attacker gets the reward

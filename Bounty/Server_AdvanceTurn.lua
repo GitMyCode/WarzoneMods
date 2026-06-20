@@ -274,13 +274,37 @@ local function GrantEliminationReward(game, killerID, victimID, reward, addNewOr
 end
 
 ---@param publicData table
-local function AdvanceEscalatingRewardCountIfNeeded(publicData)
-	if BountyGetRewardMode(Mod.Settings) ~= BOUNTY_REWARD_MODE_ESCALATING then
+---@param game GameServerHook
+---@param killerID PlayerID
+---@param earnedBounty integer
+local function ApplyBountyGrowthAfterKill(publicData, game, killerID, earnedBounty)
+	local mode = BountyGetRewardMode(Mod.Settings)
+
+	if mode == BOUNTY_REWARD_MODE_GLOBAL_GROWTH then
+		local count = BountyRecordGlobalBountyIncrease(publicData)
+		local bounty = BountyPlayerBounty(Mod.Settings, publicData, nil)
+		Log("Global bounty is now +" .. tostring(bounty)
+			.. " armies after " .. tostring(count) .. " credited eliminations")
 		return
 	end
 
-	publicData.BountyEscalatingRewardCount = BountyGetEscalatingRewardCount(publicData) + 1
-	Log("Escalating bounty reward count is now " .. tostring(publicData.BountyEscalatingRewardCount))
+	if mode == BOUNTY_REWARD_MODE_KILL_COUNT then
+		local killCount = BountyRecordKillForPlayer(publicData, killerID)
+		local bounty = BountyPlayerBounty(Mod.Settings, publicData, killerID)
+		Log("Bounty for " .. PlayerName(game, killerID)
+			.. " is now +" .. tostring(bounty)
+			.. " armies after " .. tostring(killCount) .. " credited kills")
+		return
+	end
+
+	if mode == BOUNTY_REWARD_MODE_INHERITANCE then
+		local killCount = BountyRecordKillForPlayer(publicData, killerID)
+		local bounty = BountyAddToInheritedPlayerBounty(Mod.Settings, publicData, killerID, earnedBounty)
+		Log("Bounty for " .. PlayerName(game, killerID)
+			.. " stacked +" .. tostring(BountyReadNonNegativeInt(earnedBounty, 0))
+			.. " and is now +" .. tostring(bounty)
+			.. " armies after " .. tostring(killCount) .. " credited kills")
+	end
 end
 
 -- ============================================================================
@@ -457,10 +481,9 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		end
 
 		if killerID ~= nil then
-			local reward = BountyNextReward(Mod.Settings, publicData)
-			if GrantEliminationReward(game, killerID, victimID, reward, addNewOrder) then
-				AdvanceEscalatingRewardCountIfNeeded(publicData)
-			end
+			local reward = BountyNextReward(Mod.Settings, publicData, victimID)
+			GrantEliminationReward(game, killerID, victimID, reward, addNewOrder)
+			ApplyBountyGrowthAfterKill(publicData, game, killerID, reward)
 		else
 			Log("    -> NO KILLER FOUND for " .. PlayerName(game, victimID) .. "; no bounty")
 		end
@@ -500,10 +523,9 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					and game.Game.Players[killerID] ~= nil
 				then
 					Log("  Late attribution: " .. PlayerName(game, killerID))
-					local reward = BountyNextReward(Mod.Settings, publicData)
-					if GrantEliminationReward(game, killerID, playerID, reward, addNewOrder) then
-						AdvanceEscalatingRewardCountIfNeeded(publicData)
-					end
+					local reward = BountyNextReward(Mod.Settings, publicData, playerID)
+					GrantEliminationReward(game, killerID, playerID, reward, addNewOrder)
+					ApplyBountyGrowthAfterKill(publicData, game, killerID, reward)
 				else
 					Log("  No attribution available for late elimination of " .. PlayerName(game, playerID))
 				end
