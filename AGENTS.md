@@ -26,6 +26,15 @@ This file incorporates the useful parts of the Copilot instructions and adds com
 `ENGINE_FLOW.md` describes the theoretical hook lifecycle.
 `.vscode/settings.json` shows the intended editor setup.
 
+**Warzone Image Asset Sizes**
+Warzone validates mod image dimensions strictly. Use these sizes/ratios:
+- `Icon.png` — `50x50` — ratio `1:1`.
+- `Feature.png` — `500x300` — ratio `5:3`.
+- `CardImages/<CardName>.png` — `130x180` — ratio `13:18`.
+- Optional root card image copy, e.g. `<CardName>.png` — `130x180` — ratio `13:18`.
+
+For custom cards, the filename passed to `addCard(...)` must exist under the mod's `CardImages/` directory, e.g. `addCard(..., "CommunicationCard.png", ...)` expects `CardImages/CommunicationCard.png`.
+
 **Important Files**
 Start with `Assassin/Server_StartGame.lua` and `Assassin/Server_StartDistribution.lua` for initial target assignment.
 Use `Assassin/Server_AdvanceTurn.lua` for elimination and winner resolution.
