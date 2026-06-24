@@ -65,8 +65,8 @@ function Client_PresentPlayCardUI(game, cardInstance, playCard, closeCardsDialog
 
 		local vert = UI.CreateVerticalLayoutGroup(rootParent).SetFlexibleWidth(1)
 		UI.CreateLabel(vert).SetText("Communication Card").SetColor("#FFFFFF")
-		UI.CreateLabel(vert).SetText("Choose one recipient and write your private message.").SetColor("#E6E6E6")
-		UI.CreateLabel(vert).SetText("After the turn advances, everyone sees sender and recipient; only those two see the content.").SetColor("#BFBFBF")
+		UI.CreateLabel(vert).SetText("Choose one recipient and write your message.").SetColor("#E6E6E6")
+		UI.CreateLabel(vert).SetText("Other players see who you messaged, but not what you wrote.").SetColor("#BFBFBF")
 		AddSpacer(vert, 8)
 
 		local recipients = CommSortedRecipients(game)
@@ -96,7 +96,7 @@ function Client_PresentPlayCardUI(game, cardInstance, playCard, closeCardsDialog
 
 		AddSpacer(vert, 8)
 		local maxLength = CommGetMaxMessageLength(settings)
-		UI.CreateLabel(vert).SetText("Message (max " .. tostring(maxLength) .. " characters):").SetColor("#BFBFBF")
+		UI.CreateLabel(vert).SetText("Private message (max " .. tostring(maxLength) .. " characters):").SetColor("#BFBFBF")
 		CommunicationCardMessageInput = UI.CreateTextInputField(vert)
 		CommunicationCardMessageInput.SetPlaceholderText("Example: Truce on the east for two turns?")
 		CommunicationCardMessageInput.SetCharacterLimit(maxLength)

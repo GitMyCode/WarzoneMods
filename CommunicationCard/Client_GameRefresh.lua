@@ -4,7 +4,7 @@ local lastAlertedPrivateMessageID = 0
 
 ---@param game GameClientHook
 ---@return boolean
-local function IsActivePlayer(game)
+local function CanSendCustomMessage(game)
 	return game ~= nil
 		and game.Us ~= nil
 		and game.Game ~= nil
@@ -14,7 +14,7 @@ end
 
 ---@param game GameClientHook
 local function AlertUnreadPrivateMessage(game)
-	if not IsActivePlayer(game) then
+	if game == nil or game.Us == nil then
 		return
 	end
 
@@ -49,10 +49,14 @@ local function AlertUnreadPrivateMessage(game)
 			.. "\n\nOpen the Mod menu to reread it."
 	)
 
-	game.SendGameCustomMessage("Marking message read...", {
-		action = "mark_read",
-		messageID = maxUnreadID,
-	}, function(_) end)
+	-- Spectators and non-playing users cannot send custom messages. The popup still
+	-- shows from PlayerGameData, but only active players persist read state.
+	if CanSendCustomMessage(game) then
+		game.SendGameCustomMessage("Marking message read...", {
+			action = "mark_read",
+			messageID = maxUnreadID,
+		}, function(_) end)
+	end
 end
 
 ---Client_GameRefresh hook

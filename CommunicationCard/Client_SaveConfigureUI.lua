@@ -104,7 +104,7 @@ function Client_SaveConfigureUI(alert, addCard)
 
 	Mod.Settings.CommunicationCardID = addCard(
 		"Communication Card",
-		"Send one private diplomacy message to one player. Everyone sees sender and recipient; only those two see the content.",
+		"Open the message form for one private diplomacy message.",
 		"CommunicationCard.png",
 		piecesForWholeCard,
 		minimumPiecesPerTurn,
