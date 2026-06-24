@@ -1,7 +1,5 @@
 require("Util/CommunicationUtil")
 
-local publicLogInitialized = false
-local lastSeenPublicEventID = 0
 local lastAlertedPrivateMessageID = 0
 
 ---@param game GameClientHook
@@ -12,36 +10,6 @@ local function IsActivePlayer(game)
 		and game.Game ~= nil
 		and game.Game.PlayingPlayers ~= nil
 		and CommResolvePlayerID(game.Game.PlayingPlayers, game.Us.ID) ~= nil
-end
-
----@param game GameClientHook
-local function AlertNewPublicEvents(game)
-	local publicData = Mod.PublicGameData or {}
-	local log = publicData.CommunicationLog or {}
-	local maxID = CommMaxLogID(log)
-
-	if not publicLogInitialized then
-		publicLogInitialized = true
-		lastSeenPublicEventID = maxID
-		return
-	end
-
-	if maxID <= lastSeenPublicEventID then
-		return
-	end
-
-	local newest = nil
-	for _, event in ipairs(log) do
-		local id = CommReadNonNegativeInt(event.ID, 0)
-		if id > lastSeenPublicEventID and (newest == nil or id > CommReadNonNegativeInt(newest.ID, 0)) then
-			newest = event
-		end
-	end
-
-	lastSeenPublicEventID = maxID
-	if newest ~= nil then
-		UI.Alert("Diplomacy activity:\n\n" .. CommFormatPublicEvent(newest, game) .. "\n\nOnly sender and recipient can read the content.")
-	end
 end
 
 ---@param game GameClientHook
@@ -90,6 +58,5 @@ end
 ---Client_GameRefresh hook
 ---@param game GameClientHook
 function Client_GameRefresh(game)
-	AlertNewPublicEvents(game)
 	AlertUnreadPrivateMessage(game)
 end

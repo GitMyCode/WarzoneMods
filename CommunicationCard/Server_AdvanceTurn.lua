@@ -29,6 +29,20 @@ local function IsCommunicationCardOrder(order)
 end
 
 ---@param game GameServerHook
+---@param senderID PlayerID
+---@param recipientID PlayerID
+---@return PlayerID[]
+local function OtherPlayingPlayers(game, senderID, recipientID)
+	local visibleTo = {}
+	for playerID, _ in pairs(game.Game.PlayingPlayers) do
+		if not CommSamePlayerID(playerID, senderID) and not CommSamePlayerID(playerID, recipientID) then
+			table.insert(visibleTo, playerID)
+		end
+	end
+	return visibleTo
+end
+
+---@param game GameServerHook
 ---@param order GameOrderPlayCardCustom
 ---@param addNewOrder fun(order: GameOrder)
 local function DeliverCommunicationCardMessage(game, order, addNewOrder)
@@ -97,7 +111,13 @@ local function DeliverCommunicationCardMessage(game, order, addNewOrder)
 	Mod.PublicGameData = publicData
 
 	local publicText = "Diplomacy: " .. senderName .. " sent a private message to " .. recipientName
-	addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, publicText, nil, nil, nil, nil))
+	local publicViewers = OtherPlayingPlayers(game, order.PlayerID, recipientID)
+	if #publicViewers > 0 then
+		addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, publicText, publicViewers, nil, nil, nil))
+	end
+
+	local privateText = "Communication Card: " .. senderName .. " to " .. recipientName .. " — " .. CommTruncate(message, 240)
+	addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, privateText, { order.PlayerID, recipientID }, nil, nil, nil))
 	Log(publicText .. " (message " .. tostring(messageID) .. ")")
 end
 
