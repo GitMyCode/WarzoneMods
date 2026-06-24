@@ -1,6 +1,7 @@
 require("Util/CommunicationUtil")
 
 local lastAlertedPrivateMessageID = 0
+local lastGameID = nil
 
 ---@param game GameClientHook
 ---@return boolean
@@ -18,6 +19,12 @@ local function AlertUnreadPrivateMessage(game)
 		return
 	end
 
+	local gameID = game.Game and game.Game.ID or nil
+	if gameID ~= lastGameID then
+		lastGameID = gameID
+		lastAlertedPrivateMessageID = 0
+	end
+
 	local playerData = Mod.PlayerGameData or {}
 	local inbox = playerData.CommunicationInbox or {}
 	local readUpTo = CommReadNonNegativeInt(playerData.CommunicationReadUpTo, 0)
@@ -32,6 +39,18 @@ local function AlertUnreadPrivateMessage(game)
 			end
 			if id > lastAlertedPrivateMessageID and (newest == nil or id > CommReadNonNegativeInt(newest.ID, 0)) then
 				newest = message
+			end
+		end
+	end
+
+	-- If read state was not persisted yet, still show the newest unread message
+	-- once after a reload/new game even when message IDs restart from 1.
+	if newest == nil and maxUnreadID > readUpTo and lastAlertedPrivateMessageID == 0 then
+		for _, message in ipairs(inbox) do
+			local id = CommReadNonNegativeInt(message.ID, 0)
+			if id == maxUnreadID then
+				newest = message
+				break
 			end
 		end
 	end

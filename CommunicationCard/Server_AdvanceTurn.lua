@@ -96,10 +96,8 @@ local function DeliverCommunicationCardMessage(game, order, addNewOrder)
 	Mod.PlayerGameData = playerData
 	Mod.PublicGameData = publicData
 
-	local publicText = "Diplomacy: " .. senderName .. " sent a private message to " .. recipientName
-	-- Do not add another normal turn event here. The original custom-card order
-	-- already shows the public metadata to everyone, while the recipient gets the
-	-- actual content through PlayerGameData + Client_GameRefresh.
+	local publicText = "Communication Card: " .. senderName .. " sent a private message to " .. recipientName
+	addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, publicText, nil, nil, nil, nil))
 	Log(publicText .. " (message " .. tostring(messageID) .. ")")
 end
 
@@ -118,6 +116,8 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 	if IsCommunicationCardOrder(order) then
 		---@cast order GameOrderPlayCardCustom
 		DeliverCommunicationCardMessage(game, order, addNewOrder)
+		-- Replace the raw custom-card order with one clean public metadata event.
+		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage)
 	end
 end
 
