@@ -1,6 +1,6 @@
 Limited Private Diplomacy turns private communication into a scarce, visible strategic action.
 
-Players use a Communication Card from the normal Warzone Cards UI. Playing the card opens a dialog where the sender chooses one player and writes a private message. The card resolves late in the turn, then the recipient can read the message in their mod inbox and the sender keeps a sent copy.
+Players use a Communication Card from the normal Cards UI. Playing the card opens a dialog where the sender chooses one player and writes a private message. The card resolves late in the turn, then the recipient can read the message in their mod inbox and the sender keeps a sent copy.
 
 Other players cannot read the content, but the public diplomacy log and turn event show that Player A sent a private message to Player B.
 
